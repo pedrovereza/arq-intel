@@ -8,6 +8,8 @@ unsigned short memoryIndex = 0;
 
 unsigned short numero_engenheiros = 3;
 unsigned short numero_cidades = 0;
+unsigned short totalVisitas = 0;
+signed short totalRendimento = 0;
 
 char file_name[100];
 char ch;
@@ -155,20 +157,25 @@ void mensagemErro(){
 }
 
 void relatorioGeral() {
-    short maior = 0;
-    short engenheiro = 0;
-    short rendimento = 0;
+    printf("\tEngenheiro\tVisitas\tLucro\tPrejuizo\n");
     
-    for (short i = numero_engenheiros - 1; i >= 0; --i) {
-        rendimento = rendimentoEngenheiro(i);
-        
-        if (rendimento >= maior) {
-            maior = rendimento;
-            engenheiro = i;
-        }
+    totalVisitas = 0;
+    totalRendimento = 0;
+    
+    for (short j = 0; j < numero_engenheiros; ++j) {
+        printf("\t\t%d", j);
+        totalRendimento += rendimentoEngenheiro(j);
     }
     
-    printf("Maior lucro: %d do engenheiro: %d", maior, engenheiro);
+    printf("\tTotal\t\t%d", totalVisitas);
+    
+    if (totalRendimento < 0) {
+        printf("\t\t\t\t%d", totalRendimento);
+    }
+    
+    else {
+        printf("\t\t%d", totalRendimento);
+    }
 }
 
 short rendimentoEngenheiro(int engenheiro) {
@@ -178,10 +185,23 @@ short rendimentoEngenheiro(int engenheiro) {
     
     unsigned short visitas = memory[eng];
     
+    totalVisitas += visitas;
+    
     for (short i = 1; i <= visitas; ++i) {
         rendimento +=  memory[endCidades + memory[eng + i]];
         
     }
+    
+    printf("\t\t%d", visitas);
+    
+    if (rendimento < 0) {
+        printf("\t\t\t\t%d", rendimento);
+    }
+    else {
+        printf("\t\t%d", rendimento);
+    }
+    
+    printf("\n");
     
     return rendimento;
 }

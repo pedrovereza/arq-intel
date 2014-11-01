@@ -1,15 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-unsigned short eng1[5] = {4, 0, 1, 2, 4 };
-unsigned short eng2[5] = {4, 0, 1, 2, 3 };
-unsigned short eng3[5] = {4, 0, 1, 2, 4 };
-
-short cidades[5] = {-1, 2, 4, 6, 100};
-
-unsigned short *engenheiros[3] = {eng1, eng2, eng3};
-
-
 unsigned short memory[5000];
 unsigned short endCidades = 0;
 unsigned short endEngenheiros = 0;
@@ -138,7 +129,7 @@ void relatorioEngenheiro(){
     printf("Engenheiro:");
     scanf("%d", &engenheiro);
     
-    if (engenheiro < 0 || engenheiro > 2) {
+    if (engenheiro < 0 || engenheiro >= numero_engenheiros) {
         mensagemErro();
         getchar();
         relatorioEngenheiro();
@@ -175,12 +166,12 @@ void relatorioGeral() {
 short rendimentoEngenheiro(int engenheiro) {
     short rendimento = 0;
     
-    unsigned short *eng = &(memory[endEngenheiros + engenheiro]);
+    unsigned short eng = (memory[endEngenheiros + engenheiro]);
     
-    short visitas = eng[0];
+    unsigned short visitas = memory[eng];
     
     for (short i = 1; i <= visitas; ++i) {
-        rendimento +=  memory[endCidades + eng[i]];
+        rendimento +=  memory[endCidades + memory[eng + i]];
         
     }
     

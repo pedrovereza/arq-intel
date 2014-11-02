@@ -57,6 +57,8 @@ readFile	proc	near
 	mov	nro_cidades, ax
 
 	mov	cx, nro_cidades
+	dec	cx
+
 	lea	ax, dados
 	mov	end_cidades, ax
 	lea	si, dados

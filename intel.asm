@@ -14,8 +14,15 @@ MAXSTRING	equ		200
 String	db		MAXSTRING dup (?)	; Declarar no segmento de dados
 FileBuffer	db		10 dup (?)		; Declarar no segmento de dados
 msg_entrada	db		'Pedro Vereza - Cartao 242250', 10, 13, 0
-msg_menu	db		'>> Caracteres de comandos', 10, 13, 9, '[a] solicita novo arquivo de dados', 10, 13, 9, '[g] apresenta o relatorio gera', 10, 13, 9, '[e] apresenta relatorio de um engenheiro', 10, 13, 9, '[f] encerra o programa', 10, 13, 9,'[?] lista os comandos validos', 10, 13, 0
+msg_menu	db		'>> Caracteres de comandos', 10, 13, 9, '[a] solicita novo arquivo de dados', 10, 13, 9, '[g] apresenta o relatorio geral', 10, 13, 9, '[e] apresenta relatorio de um engenheiro', 10, 13, 9, '[f] encerra o programa', 10, 13, 9,'[?] lista os comandos validos', 10, 13, 0
+msg_cmd	db		'Commando> ', 0
+msg_arq	db		'>> Forneca o nome arquivo de dados:', 10, 13, 0
 
+nro_cidades	dw		0
+nro_eng	dw		0
+end_cidades	dw		0
+end_engs	dw		0
+index_dados	dw		0
 dados		db		0
 
 	.code
@@ -24,7 +31,18 @@ dados		db		0
 	lea	bx,	msg_entrada
 	call	printf_s
 
+	call	readFile
+
 	lea	bx,	msg_menu
+	call	printf_s
+
+	.exit
+
+;-----------------------------------------------------------------------
+;Funcao	Le do arquivo as estruturas do sistema e guarda na memoria	
+;-----------------------------------------------------------------------
+readFile	proc	near
+	lea	bx,	msg_arq
 	call	printf_s
 
 	call gets				;Leitura do nome do arquivo	
@@ -32,14 +50,27 @@ dados		db		0
 	mov	dx, bx
 	call	fopen
 
-	lea	si, String
-	call readNumber
-	call printf_s
-	
+	call	readNumber
+	mov	nro_eng, ax
 
-	.exit
+	call	readNumber
+	mov	nro_cidades, ax
 
+	mov	cx, nro_cidades
+	lea	ax, dados
+	mov	end_cidades, ax
+	lea	si, dados
 
+cidades:
+	push	cx
+	call	readNumber
+	pop	cx
+	mov	[si], ax
+	add	si, 2	
+
+LOOP	cidades
+
+readFile	endp
 ;--------------------------------------------------------------------
 ;Funcao	Le do arquivo até encontrnar "," ou fim da linha	
 ;Entra: BX -> file handle
@@ -47,21 +78,29 @@ dados		db		0
 ;--------------------------------------------------------------------
 
 readNumber	proc	near
+	lea	di, String
+read_1:
 	call getChar
 
 	cmp	dl,13
-	je	fim
+	je	eol
 	cmp	dl, 44	;virgula
 	je	fim
 
-	mov	[si], dl
-	inc	si
-	jmp	readNumber
+	mov	[di], dl
+	inc	di
+	jmp	read_1
 fim:
-	mov byte ptr [si], 0
+	mov	byte ptr [di], 0
+	push	bx
 	lea	bx, String
 	call	atoi
+	pop	bx
 	ret
+
+eol:
+	call	getChar	;Char 10
+	jmp	fim
 
 readNumber endp
 

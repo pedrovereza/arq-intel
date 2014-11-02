@@ -57,11 +57,9 @@ readFile	proc	near
 	mov	nro_cidades, ax
 
 	mov	cx, nro_cidades
-	dec	cx
 
-	lea	ax, dados
-	mov	end_cidades, ax
 	lea	si, dados
+	mov	end_cidades, si
 
 cidades:
 	push	cx
@@ -71,6 +69,44 @@ cidades:
 	add	si, 2	
 
 LOOP	cidades
+	mov	end_engs, si
+
+	mov	ax, nro_eng
+	add	ax, nro_eng
+	add	si, ax
+
+	mov	cx, nro_eng
+engenheiros:
+	mov	di, nro_eng
+	sub	di, cx
+	push	cx
+
+	push	bx
+	mov	bx, end_engs
+	mov	ax, si
+	mov	[bx+di], ax
+	pop	bx
+	
+	call	readNumber
+	mov	[si], ax
+	add	si, 2
+
+	mov	cx, ax			;Numero de visitas do engenheiro
+
+	visitas:
+		push	cx
+		call	readNumber
+		pop	cx
+		mov	[si], ax
+		add	si, 2
+	LOOP visitas
+	
+	pop	cx
+
+LOOP engenheiros
+
+	call fclose
+	ret
 
 readFile	endp
 ;--------------------------------------------------------------------

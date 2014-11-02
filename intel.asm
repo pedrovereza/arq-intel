@@ -79,6 +79,7 @@ LOOP	cidades
 engenheiros:
 	mov	di, nro_eng
 	sub	di, cx
+	add	di, di
 	push	cx
 
 	push	bx

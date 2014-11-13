@@ -27,7 +27,8 @@ dados		db		0
 
 	.code
 	.startup
-	
+
+	call	menu	
 	lea	bx,	msg_entrada
 	call	printf_s
 
@@ -37,6 +38,24 @@ dados		db		0
 	call	printf_s
 
 	.exit
+
+
+menu		proc	near
+	lea	bx, msg_menu
+	call	printf_s
+
+	lea	bx, msg_cmd
+	call	printf_s
+
+	call	gets
+
+	cmp	[bx], 'a' 	
+	cmp	[bx], 'e' 	
+	cmp	[bx], 'f' 	
+	cmp	[bx], 'g' 	
+	cmp	[bx], '?' 	
+
+menu	endp
 
 ;-----------------------------------------------------------------------
 ;Funcao	Le do arquivo as estruturas do sistema e guarda na memoria	

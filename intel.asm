@@ -284,8 +284,10 @@ read_1:
 fim:
 	mov	byte ptr [di], 0
 	push	bx
+	push	dx
 	lea	bx, String
 	call	atoi
+	pop	dx
 	pop	bx
 	ret
 
@@ -312,6 +314,12 @@ atoi	proc near
 
 		; A = 0;
 		mov		ax,0
+		mov		dl, [bx]
+		push		dx
+		cmp		dl, '-'
+		jne		atoi_2
+
+		inc		bx
 		
 atoi_2:
 		; while (*S!='\0') {
@@ -338,6 +346,13 @@ atoi_2:
 
 atoi_1:
 		; return
+		pop	dx
+		cmp	dl, '-'
+		je	negativo
+		ret
+
+negativo:
+		neg	ax
 		ret
 
 atoi	endp

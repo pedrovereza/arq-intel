@@ -17,6 +17,10 @@ msg_entrada	db		'Pedro Vereza - Cartao 242250', 10, 13, 0
 msg_menu	db		'>> Caracteres de comandos', 10, 13, 9, '[a] solicita novo arquivo de dados', 10, 13, 9, '[g] apresenta o relatorio geral', 10, 13, 9, '[e] apresenta relatorio de um engenheiro', 10, 13, 9, '[f] encerra o programa', 10, 13, 9,'[?] lista os comandos validos', 10, 13, 0
 msg_cmd	db		'Commando> ', 0
 msg_arq	db		'>> Forneca o nome arquivo de dados:', 10, 13, 0
+msg_dados1	db		9, 'Arquivo de dados:',10 ,13, 9, 9, 'Numero de cidades...... ', 0
+msg_dados2	db		10, 13, 9, 9, 'Numero de engenheiros.. ', 0
+msg_eng	db		'>> Forneca o numero do engenheiro:', 0
+msg_eng_inv	db		'Numero de engenheiro invalido', 0
 
 nro_cidades	dw		0
 nro_eng	dw		0
@@ -24,6 +28,10 @@ end_cidades	dw		0
 end_engs	dw		0
 index_dados	dw		0
 dados		db		0
+;cidades
+;engenheiros
+;visitas_por_engenheiro
+
 
 	.code
 	.startup
@@ -57,6 +65,7 @@ menu1:
 	je	menu_readFile
 
 	cmp	[bx], 'e' 	
+	je	menu_eng
 
 	cmp	[bx], 'f' 	
 	je	menu_fim
@@ -72,6 +81,10 @@ menu_readFile:
 	call	readFile
 	jmp	menu1
 
+menu_eng:
+	call	relatorioEngenheiro
+	jmp	menu1
+
 menu_ajuda:
 	call	ajuda
 	jmp	menu1
@@ -80,6 +93,51 @@ menu_fim:
 	ret
 
 menu	endp
+
+
+
+relatorioEngenheiro	proc	near
+relatorio_eng_1:
+	lea	bx, msg_eng
+	call	printf_s
+
+	call	gets
+	call	atoi
+
+	cmp	ax, nro_eng
+	jge	invalido
+
+	cmp	ax, 0
+	jl	invalido
+
+	add	ax, ax
+
+	mov	si, end_engs		
+	add	si, ax		;si = inicio do array de visitas do engenheiro
+
+	mov	si, [si]
+	mov	cx, [si]
+	
+	mov	ax, 0
+	mov	bp, end_cidades
+cada_visita:
+	inc	si
+	inc	si
+
+	mov	di, [si]
+	add	di, [si]
+	add	ax, [bp+di]	
+LOOP	cada_visita
+	
+	ret
+
+invalido:
+	lea	bx, msg_eng_inv
+	call	printf_s
+
+	jmp	relatorio_eng_1
+
+relatorioEngenheiro	endp
 
 ;-----------------------------------------------------------------------
 ;Funcao	Le do arquivo as estruturas do sistema e guarda na memoria	

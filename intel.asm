@@ -28,32 +28,56 @@ dados		db		0
 	.code
 	.startup
 
-	call	menu	
 	lea	bx,	msg_entrada
 	call	printf_s
 
 	call	readFile
 
-	lea	bx,	msg_menu
-	call	printf_s
+	call	ajuda
+
+	call	menu	
 
 	.exit
 
-
-menu		proc	near
+ajuda		proc	near
 	lea	bx, msg_menu
 	call	printf_s
 
+	ret
+ajuda		endp
+
+menu		proc	near
+menu1:
 	lea	bx, msg_cmd
 	call	printf_s
 
 	call	gets
 
 	cmp	[bx], 'a' 	
+	je	menu_readFile
+
 	cmp	[bx], 'e' 	
+
 	cmp	[bx], 'f' 	
+	je	menu_fim
+
 	cmp	[bx], 'g' 	
+
 	cmp	[bx], '?' 	
+	je	menu_ajuda
+
+	jmp	menu1
+
+menu_readFile:
+	call	readFile
+	jmp	menu1
+
+menu_ajuda:
+	call	ajuda
+	jmp	menu1
+
+menu_fim:
+	ret
 
 menu	endp
 

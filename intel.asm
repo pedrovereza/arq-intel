@@ -13,14 +13,25 @@
 MAXSTRING	equ		200
 String	db		MAXSTRING dup (?)	; Declarar no segmento de dados
 FileBuffer	db		10 dup (?)		; Declarar no segmento de dados
+sw_n		dw		0
+sw_f		db		0
+sw_m		dw		0
+
 msg_entrada	db		'Pedro Vereza - Cartao 242250', 10, 13, 0
-msg_menu	db		'>> Caracteres de comandos', 10, 13, 9, '[a] solicita novo arquivo de dados', 10, 13, 9, '[g] apresenta o relatorio geral', 10, 13, 9, '[e] apresenta relatorio de um engenheiro', 10, 13, 9, '[f] encerra o programa', 10, 13, 9,'[?] lista os comandos validos', 10, 13, 0
-msg_cmd	db		'Commando> ', 0
+msg_menu	db		'>> Caracteres de comandos', 10, 13, 9, '[a] solicita novo arquivo de dados', 10, 13, 9, '[g] apresenta o relatorio geral', 10, 13, 9, '[e] apresenta relatorio de um engenheiro', 10, 13, 9, '[f] encerra o programa', 10, 13, 9,'[?] lista os comandos validos', 0
+msg_cmd	db		10, 13, 'Comando> ', 0
 msg_arq	db		'>> Forneca o nome arquivo de dados:', 10, 13, 0
 msg_dados1	db		9, 'Arquivo de dados:',10 ,13, 9, 9, 'Numero de cidades...... ', 0
 msg_dados2	db		10, 13, 9, 9, 'Numero de engenheiros.. ', 0
 msg_eng	db		'>> Forneca o numero do engenheiro:', 0
 msg_eng_inv	db		'Numero de engenheiro invalido', 0
+TAB		db		9, 0
+TOTAL		db		'Total', 0
+
+rel_e_eng	db		9, 'Relatorio do Engenheiro ', 0
+rel_e_vis	db		10, 13, 9, 'Numero de visitas: ', 0
+rel_e_tab	db		10, 13, 9, 'Cidade', 9, 'Lucro', 9, 'Prejuizo', 0
+rel_e_align db		10, 13, 9, 0
 
 nro_cidades	dw		0
 nro_eng	dw		0
@@ -94,8 +105,6 @@ menu_fim:
 
 menu	endp
 
-
-
 relatorioEngenheiro	proc	near
 relatorio_eng_1:
 	lea	bx, msg_eng
@@ -109,7 +118,12 @@ relatorio_eng_1:
 
 	cmp	ax, 0
 	jl	invalido
+					;-------------------------------------------
+	lea	bx, rel_e_eng	;Relatorio do engenheiro x
+	call	printf_s
 
+	call	printNumber
+					;-------------------------------------------
 	add	ax, ax
 
 	mov	si, end_engs		
@@ -118,17 +132,54 @@ relatorio_eng_1:
 	mov	si, [si]
 	mov	cx, [si]
 	
-	mov	ax, 0
+					;-------------------------------------------
+	lea	bx, rel_e_vis	;Numero de visitas: y
+	call	printf_s
+	mov	ax, cx
+	call	printNumber
+	
+					;-------------------------------------------
+
+	lea	bx, rel_e_tab	;cabecalho da tabela
+	call	printf_s
+
+	mov	dx, 0
 	mov	bp, end_cidades
 cada_visita:
 	inc	si
 	inc	si
 
+	lea	bx, rel_e_align
+	call	printf_s
+
+	mov	ax, [si]
+	call	printNumber		; numero da cidade
+
+	lea	bx,	TAB
+	call	printf_s
+
 	mov	di, [si]
 	add	di, [si]
-	add	ax, [bp+di]	
+
+	mov	ax, [bp+di]	
+
+	call	printNumber	
+
+	add	dx, ax	
 LOOP	cada_visita
 	
+	lea	bx, rel_e_align
+	call	printf_s
+
+	lea	bx, TOTAL
+	call	printf_s
+
+	lea	bx, TAB	
+	call	printf_s
+
+	mov	ax, dx	
+	call printNumber	
+
 	ret
 
 invalido:
@@ -398,10 +449,37 @@ gets	proc	near
 gets	endp
 
 ;--------------------------------------------------------------------
+;Funcaoo Escrever um numero na tela
+;	AX -> numero
+;--------------------------------------------------------------------
+printNumber	proc	near
+	push	ax
+	push	cx
+	push	dx
+	push	bp
+
+	lea	bx, String
+	call	sprintf_w
+
+	lea	bx, String
+	call	printf_s	
+
+	pop	bp
+	pop	dx
+	pop	cx
+	pop	ax
+	ret
+
+printNumber	endp
+
+;--------------------------------------------------------------------
 ;Fun��o Escrever um string na tela
 ;		printf_s(char *s -> BX)
 ;--------------------------------------------------------------------
 printf_s	proc	near
+	push		ax
+	push		dx
+print1:
 	mov		dl,[bx]
 	cmp		dl,0
 	je		ps_1
@@ -412,11 +490,87 @@ printf_s	proc	near
 	pop		bx
 
 	inc		bx		
-	jmp		printf_s
+	jmp		print1
 		
 ps_1:
+	pop		dx
+	pop		ax
+
 	ret
 printf_s	endp
+
+sprintf_w	proc	near
+
+;void sprintf_w(char *string, WORD n) {
+	mov		sw_n,ax
+
+;	k=5;
+	mov		cx,5
+	
+;	m=10000;
+	mov		sw_m,10000
+	
+;	f=0;
+	mov		sw_f,0
+	
+;	do {
+sw_do:
+
+;		quociente = n / m : resto = n % m;	// Usar instrução DIV
+	mov		dx,0
+	mov		ax,sw_n
+	div		sw_m
+	
+;		if (quociente || f) {
+;			*string++ = quociente+'0'
+;			f = 1;
+;		}
+	cmp		al,0
+	jne		sw_store
+	cmp		sw_f,0
+	je		sw_continue
+sw_store:
+	add		al,'0'
+	mov		[bx],al
+	inc		bx
+	
+	mov		sw_f,1
+sw_continue:
+	
+;		n = resto;
+	mov		sw_n,dx
+	
+;		m = m/10;
+	mov		dx,0
+	mov		ax,sw_m
+	mov		bp,10
+	div		bp
+	mov		sw_m,ax
+	
+;		--k;
+	dec		cx
+	
+;	} while(k);
+	cmp		cx,0
+	jnz		sw_do
+
+;	if (!f)
+;		*string++ = '0';
+	cmp		sw_f,0
+	jnz		sw_continua2
+	mov		[bx],'0'
+	inc		bx
+sw_continua2:
+
+
+;	*string = '\0';
+	mov		byte ptr[bx],0
+		
+;}
+	ret
+		
+sprintf_w	endp
+
 ;--------------------------------------------------------------------
 	end
 ;--------------------------------------------------------------------

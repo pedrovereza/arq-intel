@@ -155,15 +155,11 @@ cada_visita:
 	mov	ax, [si]
 	call	printNumber		; numero da cidade
 
-	lea	bx,	TAB
-	call	printf_s
-
 	mov	di, [si]
 	add	di, [si]
 
 	mov	ax, [bp+di]	
-
-	call	printNumber	
+	call	printRendimento
 
 	add	dx, ax	
 LOOP	cada_visita
@@ -178,7 +174,7 @@ LOOP	cada_visita
 	call	printf_s
 
 	mov	ax, dx	
-	call printNumber	
+	call printRendimento	
 
 	ret
 
@@ -296,6 +292,27 @@ eol:
 	jmp	fim
 
 readNumber endp
+
+;
+;--------------------------------------------------------------------
+; Escreve o numero em ax na coluna de lucro ou prejuizo
+;--------------------------------------------------------------------
+printRendimento	proc	near
+	lea	bx, TAB
+	call	printf_s
+
+	test	ax, ax
+	jns	printRendimento1
+
+	lea	bx, TAB		; Escrevendo na coluna de prejuizo
+	call	printf_s
+
+printRendimento1:
+	call	printNumber	
+
+	ret
+
+printRendimento	endp
 
 ;
 ;--------------------------------------------------------------------
@@ -516,6 +533,12 @@ printf_s	endp
 
 sprintf_w	proc	near
 
+	test	ax, ax
+	jns	positive
+
+	neg	ax
+
+positive:
 ;void sprintf_w(char *string, WORD n) {
 	mov		sw_n,ax
 

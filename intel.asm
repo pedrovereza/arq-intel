@@ -28,10 +28,13 @@ msg_eng_inv	db		'Numero de engenheiro invalido', 0
 TAB		db		9, 0
 TOTAL		db		'Total', 0
 
+rel_g_geral	db		'>> Relatorio Geral', 0
+rel_g_tab	db		10, 13, 9, 'Engenheiro', 9, 'Visitas', 9, 'Lucro', 9, 'Prejuizo', 0
+
 rel_e_eng	db		9, 'Relatorio do Engenheiro ', 0
 rel_e_vis	db		10, 13, 9, 'Numero de visitas: ', 0
 rel_e_tab	db		10, 13, 9, 'Cidade', 9, 'Lucro', 9, 'Prejuizo', 0
-rel_e_align db		10, 13, 9, 0
+rel_align db		10, 13, 9, 0
 
 nro_cidades	dw		0
 nro_eng	dw		0
@@ -82,6 +85,7 @@ menu1:
 	je	menu_fim
 
 	cmp	[bx], 'g' 	
+	je	menu_geral
 
 	cmp	[bx], '?' 	
 	je	menu_ajuda
@@ -102,6 +106,10 @@ menu_ajuda:
 
 menu_fim:
 	ret
+
+menu_geral:
+	call	relatorioGeral
+	jmp	menu1
 
 menu	endp
 
@@ -131,15 +139,12 @@ relatorio_eng_1:
 
 	mov	si, [si]
 	mov	cx, [si]
-	
 					;-------------------------------------------
 	lea	bx, rel_e_vis	;Numero de visitas: y
 	call	printf_s
 	mov	ax, cx
 	call	printNumber
-	
 					;-------------------------------------------
-
 	lea	bx, rel_e_tab	;cabecalho da tabela
 	call	printf_s
 
@@ -149,7 +154,7 @@ cada_visita:
 	inc	si
 	inc	si
 
-	lea	bx, rel_e_align
+	lea	bx, rel_align
 	call	printf_s
 
 	mov	ax, [si]
@@ -164,7 +169,7 @@ cada_visita:
 	add	dx, ax	
 LOOP	cada_visita
 	
-	lea	bx, rel_e_align
+	lea	bx, rel_align
 	call	printf_s
 
 	lea	bx, TOTAL
@@ -185,6 +190,83 @@ invalido:
 	jmp	relatorio_eng_1
 
 relatorioEngenheiro	endp
+
+
+relatorioGeral	proc	near
+	lea	bx, rel_g_geral	
+	call	printf_s
+
+	lea	bx, rel_g_tab
+	call	printf_s	
+
+	mov	ax, 0
+eng:
+	cmp	ax, nro_eng
+	je	fimRelGeral
+
+	push	ax
+	call	rendimentoEng
+	pop	ax
+
+	inc	ax
+
+	jmp eng
+
+fimRelGeral:
+	ret
+relatorioGeral	endp
+
+;-----------------------------------------------------------------------
+;Calcula o rendimento do engenheiro.
+;		AX -> id do engenheiro
+;		DX <- rendimento
+;		BX <- visitas		
+;-----------------------------------------------------------------------
+rendimentoEng	proc	near
+	lea	bx, rel_align
+	call	printf_s
+
+	call	printNumber
+
+	lea	bx, TAB
+	call	printf_s
+
+	add	ax, ax
+
+	mov	si, end_engs		
+	add	si, ax		;si = inicio do array de visitas do engenheiro
+
+	mov	si, [si]
+	mov	cx, [si]
+
+	mov	ax, cx
+	call	printNumber
+
+	push	cx
+
+	mov	dx, 0
+	mov	bp, end_cidades
+
+cada_visita2:
+	inc	si
+	inc	si
+
+	mov	di, [si]
+	add	di, [si]
+
+	mov	ax, [bp+di]	
+
+	add	dx, ax	
+LOOP	cada_visita2
+
+	mov	ax, dx
+	call printRendimento
+
+	pop	bx	;visitas	
+
+ret
+
+rendimentoEng	endp
 
 ;-----------------------------------------------------------------------
 ;Funcao	Le do arquivo as estruturas do sistema e guarda na memoria	

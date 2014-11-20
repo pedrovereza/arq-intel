@@ -200,19 +200,47 @@ relatorioGeral	proc	near
 	call	printf_s	
 
 	mov	ax, 0
+	mov	cx, 0		;total rendimento
+	mov	dx, 0		;total visitas
 eng:
 	cmp	ax, nro_eng
 	je	fimRelGeral
 
+	push	dx
+	push	cx
 	push	ax
 	call	rendimentoEng
 	pop	ax
+
+	pop	cx
+	add	cx, dx
+
+	pop	dx
+	add	dx, bx
 
 	inc	ax
 
 	jmp eng
 
 fimRelGeral:
+	lea	bx, rel_align
+	call	printf_s
+
+	lea	bx, TOTAL	
+	call	printf_s
+	
+	lea	bx, TAB
+	call	printf_s
+	
+	mov	ax, dx
+	call	printNumber
+
+	lea	bx, TAB
+	call	printf_s
+
+	mov	ax, cx
+	call	printRendimento
+
 	ret
 relatorioGeral	endp
 

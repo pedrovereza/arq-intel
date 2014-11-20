@@ -18,10 +18,10 @@ sw_f		db		0
 sw_m		dw		0
 
 msg_entrada	db		'Pedro Vereza - Cartao 242250', 13, 10, 0
-msg_menu	db		'>> Caracteres de comandos', 13, 10, 9, '[a] solicita novo arquivo de dados', 13, 10, 9, '[g] apresenta o relatorio geral', 13, 10, 9, '[e] apresenta relatorio de um engenheiro', 13, 10, 9, '[f] encerra o programa', 13, 10, 9,'[?] lista os comandos validos', 0
+msg_menu	db		13, 10, '>> Caracteres de comandos', 13, 10, 9, '[a] solicita novo arquivo de dados', 13, 10, 9, '[g] apresenta o relatorio geral', 13, 10, 9, '[e] apresenta relatorio de um engenheiro', 13, 10, 9, '[f] encerra o programa', 13, 10, 9,'[?] lista os comandos validos', 0
 msg_cmd	db		13, 10, 'Comando> ', 0
 msg_arq	db		'>> Forneca o nome arquivo de dados:', 13, 10, 0
-msg_dados1	db		9, 'Arquivo de dados:',10 ,13, 9, 9, 'Numero de cidades...... ', 0
+msg_dados1	db		13, 10, 9, 'Arquivo de dados:',10 ,13, 9, 9, 'Numero de cidades...... ', 0
 msg_dados2	db		13, 10, 9, 9, 'Numero de engenheiros.. ', 0
 msg_eng	db		13, 10, '>> Forneca o numero do engenheiro:', 0
 msg_eng_inv	db		13, 10, 'Numero de engenheiro invalido', 0
@@ -365,6 +365,19 @@ engenheiros:
 LOOP engenheiros
 
 	call fclose
+	
+	lea	bx, msg_dados1
+	call	printf_s
+
+	mov	ax, nro_cidades
+	call	printNumber
+
+	lea	bx, msg_dados2
+	call	printf_s
+	
+	mov	ax, nro_eng
+	call	printNumber
+	
 	ret
 
 readFile	endp

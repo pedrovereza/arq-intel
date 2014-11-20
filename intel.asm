@@ -17,24 +17,24 @@ sw_n		dw		0
 sw_f		db		0
 sw_m		dw		0
 
-msg_entrada	db		'Pedro Vereza - Cartao 242250', 10, 13, 0
-msg_menu	db		'>> Caracteres de comandos', 10, 13, 9, '[a] solicita novo arquivo de dados', 10, 13, 9, '[g] apresenta o relatorio geral', 10, 13, 9, '[e] apresenta relatorio de um engenheiro', 10, 13, 9, '[f] encerra o programa', 10, 13, 9,'[?] lista os comandos validos', 0
-msg_cmd	db		10, 13, 'Comando> ', 0
-msg_arq	db		'>> Forneca o nome arquivo de dados:', 10, 13, 0
+msg_entrada	db		'Pedro Vereza - Cartao 242250', 13, 10, 0
+msg_menu	db		'>> Caracteres de comandos', 13, 10, 9, '[a] solicita novo arquivo de dados', 13, 10, 9, '[g] apresenta o relatorio geral', 13, 10, 9, '[e] apresenta relatorio de um engenheiro', 13, 10, 9, '[f] encerra o programa', 13, 10, 9,'[?] lista os comandos validos', 0
+msg_cmd	db		13, 10, 'Comando> ', 0
+msg_arq	db		'>> Forneca o nome arquivo de dados:', 13, 10, 0
 msg_dados1	db		9, 'Arquivo de dados:',10 ,13, 9, 9, 'Numero de cidades...... ', 0
-msg_dados2	db		10, 13, 9, 9, 'Numero de engenheiros.. ', 0
-msg_eng	db		'>> Forneca o numero do engenheiro:', 0
-msg_eng_inv	db		'Numero de engenheiro invalido', 0
+msg_dados2	db		13, 10, 9, 9, 'Numero de engenheiros.. ', 0
+msg_eng	db		13, 10, '>> Forneca o numero do engenheiro:', 0
+msg_eng_inv	db		13, 10, 'Numero de engenheiro invalido', 0
 TAB		db		9, 0
 TOTAL		db		'Total', 0
 
 rel_g_geral	db		'>> Relatorio Geral', 0
-rel_g_tab	db		10, 13, 9, 'Engenheiro', 9, 'Visitas', 9, 'Lucro', 9, 'Prejuizo', 0
+rel_g_tab	db		13, 10, 9, 'Engenheiro', 9, 'Visitas', 9, 'Lucro', 9, 'Prejuizo', 0
 
-rel_e_eng	db		9, 'Relatorio do Engenheiro ', 0
-rel_e_vis	db		10, 13, 9, 'Numero de visitas: ', 0
-rel_e_tab	db		10, 13, 9, 'Cidade', 9, 'Lucro', 9, 'Prejuizo', 0
-rel_align db		10, 13, 9, 0
+rel_e_eng	db		13, 10, 9, 'Relatorio do Engenheiro ', 0
+rel_e_vis	db		13, 10, 9, 'Numero de visitas: ', 0
+rel_e_tab	db		13, 10, 9, 'Cidade', 9, 'Lucro', 9, 'Prejuizo', 0
+rel_align db		13, 10, 9, 0
 
 nro_cidades	dw		0
 nro_eng	dw		0
@@ -543,6 +543,7 @@ setChar	endp
 ;		gets(char *s -> bx)
 ;--------------------------------------------------------------------
 gets	proc	near
+	lea	bx,	String
 	push	bx
 
 	mov		ah,0ah						; L� uma linha do teclado

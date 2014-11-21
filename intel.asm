@@ -25,6 +25,7 @@ msg_dados1	db		13, 10, 9, 'Arquivo de dados:',10 ,13, 9, 9, 'Numero de cidades..
 msg_dados2	db		13, 10, 9, 9, 'Numero de engenheiros.. ', 0
 msg_eng	db		13, 10, '>> Forneca o numero do engenheiro:', 0
 msg_eng_inv	db		13, 10, 'Numero de engenheiro invalido', 0
+msg_fim	db		13, 10, 'Fim da execucao', 0
 TAB		db		'        ', 0
 TOTAL		db		13, 10, '     Total', 0
 decimal	db		',00', 0
@@ -107,6 +108,8 @@ menu_ajuda:
 	jmp	menu1
 
 menu_fim:
+	lea	bx, msg_fim
+	call	printf_s
 	ret
 
 menu_geral:

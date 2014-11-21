@@ -121,6 +121,12 @@ relatorio_eng_1:
 	call	printf_s
 
 	call	gets
+	cmp	[bx], 0
+	jne	valido
+
+	ret
+
+valido:
 	call	atoi
 
 	cmp	ax, nro_eng

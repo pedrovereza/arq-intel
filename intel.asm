@@ -25,16 +25,19 @@ msg_dados1	db		13, 10, 9, 'Arquivo de dados:',10 ,13, 9, 9, 'Numero de cidades..
 msg_dados2	db		13, 10, 9, 9, 'Numero de engenheiros.. ', 0
 msg_eng	db		13, 10, '>> Forneca o numero do engenheiro:', 0
 msg_eng_inv	db		13, 10, 'Numero de engenheiro invalido', 0
-TAB		db		9, 0
-TOTAL		db		'Total', 0
+TAB		db		'        ', 0
+TOTAL		db		13, 10, '      Total', 0
+decimal	db		',00', 0
 
 rel_g_geral	db		'>> Relatorio Geral', 0
-rel_g_tab	db		13, 10, 9, 'Engenheiro', 9, 'Visitas', 9, 'Lucro', 9, 'Prejuizo', 0
+rel_g_tab	db		13, 10, 32, 32, 32, 32, 'Engenheiro', 32, 'Visitas', 32, 32, 32, 32, 32, 32, 'Lucro', 32, 32, 32, 32, 32, 'Prejuizo', 0
 
 rel_e_eng	db		13, 10, 9, 'Relatorio do Engenheiro ', 0
 rel_e_vis	db		13, 10, 9, 'Numero de visitas: ', 0
 rel_e_tab	db		13, 10, 9, 'Cidade', 9, 'Lucro', 9, 'Prejuizo', 0
 rel_align db		13, 10, 9, 0
+new_line	db		13, 10, 0
+space		db		32, 0
 
 nro_cidades	dw		0
 nro_eng	dw		0
@@ -179,7 +182,7 @@ LOOP	cada_visita
 	call	printf_s
 
 	mov	ax, dx	
-	call printRendimento	
+	call printRendimento
 
 	ret
 
@@ -223,9 +226,6 @@ eng:
 	jmp eng
 
 fimRelGeral:
-	lea	bx, rel_align
-	call	printf_s
-
 	lea	bx, TOTAL	
 	call	printf_s
 	
@@ -251,13 +251,12 @@ relatorioGeral	endp
 ;		BX <- visitas		
 ;-----------------------------------------------------------------------
 rendimentoEng	proc	near
-	lea	bx, rel_align
+	lea	bx, new_line
 	call	printf_s
+
+	call	alinhamentoGeral
 
 	call	printNumber
-
-	lea	bx, TAB
-	call	printf_s
 
 	add	ax, ax
 
@@ -268,6 +267,7 @@ rendimentoEng	proc	near
 	mov	cx, [si]
 
 	mov	ax, cx
+	call	alinhamentoGeral
 	call	printNumber
 
 	push	cx
@@ -295,6 +295,133 @@ LOOP	cada_visita2
 ret
 
 rendimentoEng	endp
+
+alinhamentoGeral	proc	near
+	push	cx
+
+	cmp	ax, 10
+	jl	um_digito
+
+	cmp	ax, 100
+	jl	dois_digitos
+
+	jmp	tres_digitos
+	
+um_digito:
+	mov	cx, 9	
+	jmp	fim_align
+
+dois_digitos:
+	mov	cx, 8	
+	jmp	fim_align
+
+tres_digitos:
+	mov	cx, 7	
+	jmp	fim_align	
+
+fim_align:
+
+espacos:
+	lea	bx, space
+	call	printf_s
+
+LOOP espacos
+
+	pop	cx
+	ret
+
+alinhamentoGeral	endp
+
+
+alinhamentoRendimento	proc	near
+	push	cx
+	push	ax
+
+	mov	cx, 6
+
+	test	ax, ax
+	jns	alinhamento_r
+
+	neg	ax
+
+alinhamento_r:
+	cmp	ax, 10000
+	jge	fim_align_r
+
+	inc	cx
+
+	cmp	ax, 1000
+	jge	fim_align_r
+	
+	inc	cx
+
+	cmp	ax, 100
+	jge	fim_align_r
+	
+	inc	cx
+
+	cmp	ax, 10
+	jge	fim_align_r
+
+	inc	cx
+
+fim_align_r:
+
+espacos_r:
+	lea	bx, space
+	call	printf_s
+LOOP espacos_r
+
+	pop	ax
+	pop	cx
+	ret
+
+alinhamentoRendimento	endp
+
+fakePrintRendimento	proc	near
+	push	cx
+	push	ax
+
+	mov	cx, 8
+
+	test	ax, ax
+	jns	fakePrint
+
+	neg	ax
+
+fakePrint:
+	cmp	ax, 10000
+	jge	fim_fake
+
+	dec	cx
+
+	cmp	ax, 1000
+	jge	fim_fake
+	
+	dec	cx
+
+	cmp	ax, 100
+	jge	fim_fake
+	
+	dec	cx
+
+	cmp	ax, 10
+	jge	fim_fake
+
+	dec	cx
+
+fim_fake:
+
+espacos_fake:
+	lea	bx, space
+	call	printf_s
+LOOP espacos_fake
+
+	pop	ax
+	pop	cx
+	ret
+
+fakePrintRendimento	endp
 
 ;-----------------------------------------------------------------------
 ;Funcao	Le do arquivo as estruturas do sistema e guarda na memoria	
@@ -421,17 +548,19 @@ readNumber endp
 ; Escreve o numero em ax na coluna de lucro ou prejuizo
 ;--------------------------------------------------------------------
 printRendimento	proc	near
-	lea	bx, TAB
-	call	printf_s
+	call	alinhamentoRendimento
 
 	test	ax, ax
 	jns	printRendimento1
 
-	lea	bx, TAB		; Escrevendo na coluna de prejuizo
-	call	printf_s
+	call	fakePrintRendimento
+	call	alinhamentoRendimento
 
 printRendimento1:
 	call	printNumber	
+
+	lea	bx, decimal
+	call	printf_s
 
 	ret
 

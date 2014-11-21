@@ -30,12 +30,12 @@ TOTAL		db		13, 10, '     Total', 0
 decimal	db		',00', 0
 
 rel_g_geral	db		'>> Relatorio Geral', 0
-rel_g_tab	db		13, 10, 32, 32, 32, 32, 'Engenheiro', 32, 'Visitas', 32, 32, 32, 32, 32, 32, 'Lucro', 32, 32, 32, 32, 32, 'Prejuizo', 0
+rel_g_tab	db		13, 10, 32, 32, 32, 32, 'Engenheiro', 32, 32, 'Visitas', 32, 32, 32, 32, 32, 32, 'Lucro', 32, 32, 32, 32, 32, 32, 'Prejuizo', 0
 
 rel_e_eng	db		13, 10, 9, 'Relatorio do Engenheiro ', 0
 rel_e_vis	db		13, 10, 9, 'Numero de visitas: ', 0
-rel_e_tab	db		13, 10, 9, 'Cidade', 32, 32, 32, 32, 32, 'Lucro', 32, 32, 32, 32, 32, 'Prejuizo', 0
-rel_align db		13, 10, 9, 0
+rel_e_tab	db		13, 10, 32, 32, 32, 32,  'Cidade', 32, 32, 32, 32, 32, 32, 32, 32, 32, 'Lucro', 32, 32, 32, 32, 32, 32, 'Prejuizo', 0
+rel_align	db		13, 10, 9, 0
 new_line	db		13, 10, 0
 space		db		32, 0
 

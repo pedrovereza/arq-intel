@@ -26,7 +26,7 @@ msg_dados2	db		13, 10, 9, 9, 'Numero de engenheiros.. ', 0
 msg_eng	db		13, 10, '>> Forneca o numero do engenheiro:', 0
 msg_eng_inv	db		13, 10, 'Numero de engenheiro invalido', 0
 TAB		db		'        ', 0
-TOTAL		db		13, 10, '      Total', 0
+TOTAL		db		13, 10, '     Total', 0
 decimal	db		',00', 0
 
 rel_g_geral	db		'>> Relatorio Geral', 0
@@ -34,7 +34,7 @@ rel_g_tab	db		13, 10, 32, 32, 32, 32, 'Engenheiro', 32, 'Visitas', 32, 32, 32, 3
 
 rel_e_eng	db		13, 10, 9, 'Relatorio do Engenheiro ', 0
 rel_e_vis	db		13, 10, 9, 'Numero de visitas: ', 0
-rel_e_tab	db		13, 10, 9, 'Cidade', 9, 'Lucro', 9, 'Prejuizo', 0
+rel_e_tab	db		13, 10, 9, 'Cidade', 32, 32, 32, 32, 32, 'Lucro', 32, 32, 32, 32, 32, 'Prejuizo', 0
 rel_align db		13, 10, 9, 0
 new_line	db		13, 10, 0
 space		db		32, 0
@@ -48,7 +48,6 @@ dados		db		0
 ;cidades
 ;engenheiros
 ;visitas_por_engenheiro
-
 
 	.code
 	.startup
@@ -157,10 +156,11 @@ cada_visita:
 	inc	si
 	inc	si
 
-	lea	bx, rel_align
+	lea	bx, new_line
 	call	printf_s
 
 	mov	ax, [si]
+	call	alinhamentoGeral
 	call	printNumber		; numero da cidade
 
 	mov	di, [si]
@@ -171,14 +171,8 @@ cada_visita:
 
 	add	dx, ax	
 LOOP	cada_visita
-	
-	lea	bx, rel_align
-	call	printf_s
 
 	lea	bx, TOTAL
-	call	printf_s
-
-	lea	bx, TAB	
 	call	printf_s
 
 	mov	ax, dx	
@@ -229,14 +223,10 @@ fimRelGeral:
 	lea	bx, TOTAL	
 	call	printf_s
 	
-	lea	bx, TAB
-	call	printf_s
-	
 	mov	ax, dx
-	call	printNumber
 
-	lea	bx, TAB
-	call	printf_s
+	call	alinhamentoGeral
+	call	printNumber
 
 	mov	ax, cx
 	call	printRendimento

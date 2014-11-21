@@ -153,6 +153,9 @@ relatorio_eng_1:
 	mov	dx, 0
 	mov	bp, end_cidades
 cada_visita:
+	cmp	cx, 0
+	je	fim_cada_visita
+
 	inc	si
 	inc	si
 
@@ -170,7 +173,10 @@ cada_visita:
 	call	printRendimento
 
 	add	dx, ax	
-LOOP	cada_visita
+
+	dec	cx
+	jmp	cada_visita
+fim_cada_visita:
 
 	lea	bx, TOTAL
 	call	printf_s
@@ -266,6 +272,9 @@ rendimentoEng	proc	near
 	mov	bp, end_cidades
 
 cada_visita2:
+	cmp	cx, 0
+	je	fim_cada_visita2
+	
 	inc	si
 	inc	si
 
@@ -275,7 +284,10 @@ cada_visita2:
 	mov	ax, [bp+di]	
 
 	add	dx, ax	
-LOOP	cada_visita2
+
+	dec	cx
+	jmp	cada_visita2
+fim_cada_visita2:
 
 	mov	ax, dx
 	call printRendimento
@@ -470,13 +482,18 @@ engenheiros:
 	mov	cx, ax			;Numero de visitas do engenheiro
 
 	visitas:
+		cmp	cx, 0
+		je	fim_visitas	
 		push	cx
 		call	readNumber
 		pop	cx
 		mov	[si], ax
 		add	si, 2
-	LOOP visitas
-	
+
+		dec	cx	
+		jmp	visitas
+	fim_visitas:
+
 	pop	cx
 
 LOOP engenheiros

@@ -17,10 +17,10 @@ sw_n		dw		0
 sw_f		db		0
 sw_m		dw		0
 
-msg_entrada	db		'Pedro Vereza - Cartao 242250', 13, 10, 0
+msg_entrada	db		'Pedro Vereza - Cartao 242250', 0
 msg_menu	db		13, 10, '>> Caracteres de comandos', 13, 10, 9, '[a] solicita novo arquivo de dados', 13, 10, 9, '[g] apresenta o relatorio geral', 13, 10, 9, '[e] apresenta relatorio de um engenheiro', 13, 10, 9, '[f] encerra o programa', 13, 10, 9,'[?] lista os comandos validos', 0
 msg_cmd	db		13, 10, 'Comando> ', 0
-msg_arq	db		'>> Forneca o nome arquivo de dados:', 13, 10, 0
+msg_arq	db		13, 10, '>> Forneca o nome arquivo de dados:', 13, 10, 0
 msg_dados1	db		13, 10, 9, 'Arquivo de dados:',10 ,13, 9, 9, 'Numero de cidades...... ', 0
 msg_dados2	db		13, 10, 9, 9, 'Numero de engenheiros.. ', 0
 msg_eng	db		13, 10, '>> Forneca o numero do engenheiro:', 0
@@ -29,7 +29,7 @@ TAB		db		'        ', 0
 TOTAL		db		13, 10, '     Total', 0
 decimal	db		',00', 0
 
-rel_g_geral	db		'>> Relatorio Geral', 0
+rel_g_geral	db		13, 10, '>> Relatorio Geral', 0
 rel_g_tab	db		13, 10, 32, 32, 32, 32, 'Engenheiro', 32, 32, 'Visitas', 32, 32, 32, 32, 32, 32, 'Lucro', 32, 32, 32, 32, 32, 32, 'Prejuizo', 0
 
 rel_e_eng	db		13, 10, 9, 'Relatorio do Engenheiro ', 0

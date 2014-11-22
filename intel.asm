@@ -71,6 +71,37 @@ ajuda		proc	near
 	ret
 ajuda		endp
 
+;-----------------------------------------------------------------------
+; Funcao: Menu
+;do {
+;        printf("comando>");
+;        scanf("%s", &opcao);
+;        
+;        switch (opcao) {
+;            case 'a':
+;                readFile();
+;                break;
+;            case 'r':
+;                resumo();
+;                break;
+;                
+;            case 'e':
+;                relatorioEngenheiro();
+;                break;
+;                
+;            case 'g':
+;                relatorioGeral();
+;                break;
+;                
+;            case 'f':
+;                encerramento();
+;            default:
+;                break;
+;        }
+;        
+;        
+;    } while (opcao != 'f');
+;-----------------------------------------------------------------------
 menu		proc	near
 menu1:
 	lea	bx, msg_cmd
@@ -118,6 +149,53 @@ menu_geral:
 
 menu	endp
 
+;-----------------------------------------------------------------------
+; Funcao que calcula o rendimento e imprime a tabela do relatorio de engenheiro
+;
+; void relatorioEngenheiro() {
+;     int engenheiro = 0;
+;     
+;     printf("Forneca o numero do engenheiro:");
+;     scanf("%d", &engenheiro);
+;     
+;     if (engenheiro < 0 || engenheiro >= numero_engenheiros) {
+;         mensagemErro();
+;         getchar();
+;         relatorioEngenheiro();
+;         return;
+;     }
+;     
+;     rendimentoEngenheiroWithOutput(engenheiro);
+; }
+; 
+; void rendimentoEngenheiroWithOutput(int engenheiro) {
+;     printf("\tRelatorio do engenheiro %d\n", engenheiro);
+;     short rendimento = 0;
+;     unsigned short eng = (memory[endEngenheiros + engenheiro]);
+;     unsigned short visitas = memory[eng];
+;     printf("\tNumero de visitas: %d\n", visitas);
+;     printf("\tCidade\tLucro\tPrejuizo\n");
+;     
+;     for (short i = 1; i <= visitas; ++i) {
+;         short cidade = memory[eng + i];
+;         short rendimentoCidade = memory[endCidades + cidade];
+;         
+;         if (rendimentoCidade < 0) {
+;             printf("\t\t%d\t\t\t\t%d\n", cidade, rendimentoCidade);
+;         }
+;         else {
+;             printf("\t\t%d\t\t%d\n", cidade, rendimentoCidade);
+;         }
+;         rendimento +=  rendimentoCidade;
+;     }
+;     if (rendimento < 0) {
+;         printf("\t\tTOTAL\t\t\t%d\n", rendimento);
+;     }
+;     else {
+;         printf("\t\tTOTAL\t%d\n", rendimento);
+;     }
+; }
+;-----------------------------------------------------------------------
 relatorioEngenheiro	proc	near
 relatorio_eng_1:
 	lea	bx, msg_eng
@@ -203,7 +281,9 @@ invalido:
 
 relatorioEngenheiro	endp
 
-
+;-----------------------------------------------------------------------
+; Funcao que imprime o relatorio geral
+;-----------------------------------------------------------------------
 relatorioGeral	proc	near
 	lea	bx, rel_g_geral	
 	call	printf_s
@@ -250,7 +330,7 @@ fimRelGeral:
 relatorioGeral	endp
 
 ;-----------------------------------------------------------------------
-;Calcula o rendimento do engenheiro.
+;Calcula o rendimento do engenheiro, sem outputs do processo
 ;		AX -> id do engenheiro
 ;		DX <- rendimento
 ;		BX <- visitas		
@@ -307,6 +387,10 @@ ret
 
 rendimentoEng	endp
 
+;-----------------------------------------------------------------------
+; Funcao que determina quantos espacos em branco sao necessarios para alinhar o relatorio geral
+; baseado no tamanho do numero que precisa ser escrito
+;-----------------------------------------------------------------------
 alinhamentoGeral	proc	near
 	push	cx
 
@@ -343,7 +427,10 @@ LOOP espacos
 
 alinhamentoGeral	endp
 
-
+;-----------------------------------------------------------------------
+; Funcao que determina quantos espacos em branco sao necessarios para alinhar o relatorio de engenheiro
+; baseado no tamanho do numero que precisa ser escrito
+;-----------------------------------------------------------------------
 alinhamentoRendimento	proc	near
 	push	cx
 	push	ax
@@ -389,6 +476,9 @@ LOOP espacos_r
 
 alinhamentoRendimento	endp
 
+;-----------------------------------------------------------------------
+; Funcao utilizada para imprimir espacos em branco ao inves do rendimento em si (utilizada pra alinhamento das tabelas)
+;-----------------------------------------------------------------------
 fakePrintRendimento	proc	near
 	push	cx
 	push	ax
@@ -436,6 +526,43 @@ fakePrintRendimento	endp
 
 ;-----------------------------------------------------------------------
 ;Funcao	Le do arquivo as estruturas do sistema e guarda na memoria	
+; void readFile() {
+;     printf(">>Forneca o nome do arquivo de dados:\n");
+;     scanf("%s", file_name);
+;     
+;     fp = fopen(file_name, "r");
+;     
+;     parseFile();
+;     fclose(fp);
+; }
+; 
+; void parseFile() {
+;     numero_engenheiros = readNumber();
+;     numero_cidades = readNumber();
+;     
+;     int i = 0;
+;     
+;     for (i = 0; i < numero_cidades; ++i) {
+;         memory[i] = readNumber();
+;     }
+;     
+;     memoryIndex += i;
+;     endEngenheiros = memoryIndex;
+;     memoryIndex += numero_engenheiros;
+;     
+;     for (int j = 0; j < numero_engenheiros; ++j) {
+;         memory[endEngenheiros+j] = memoryIndex;
+;         
+;         int visitas = readNumber();
+;         memory[memoryIndex] = visitas;
+;         
+;         for (i = 1; i <= visitas; ++i) {
+;             memory[memoryIndex+i] = readNumber();
+;         }
+;         memoryIndex += i;
+;     }
+; }
+; 
 ;-----------------------------------------------------------------------
 readFile	proc	near
 	lea	bx,	msg_arq
@@ -524,16 +651,16 @@ LOOP engenheiros
 	ret
 
 readFile	endp
+
 ;--------------------------------------------------------------------
 ;Funcao	Le do arquivo até encontrnar "," ou fim da linha	
 ;Entra: BX -> file handle
 ;Sai:   AX -> Numero lido
 ;--------------------------------------------------------------------
-
 readNumber	proc	near
 	lea	di, String
 read_1:
-	call getChar
+	call	getChar
 
 	cmp	dl,13
 	je	eol
@@ -559,7 +686,6 @@ eol:
 
 readNumber endp
 
-;
 ;--------------------------------------------------------------------
 ; Escreve o numero em ax na coluna de lucro ou prejuizo
 ;--------------------------------------------------------------------
